@@ -20,7 +20,7 @@ st.write(f"Model Accuracy: {logistic_regression_model*100:.2f}%")
 
 # "Try Our Tool" button
 if st.button("Try Our Tool"):
-    subprocess.run(["streamlit", "run", "tool.py"])
+    subprocess.run(['python','-m',"streamlit", "run", "tool.py"])
 
 
 
