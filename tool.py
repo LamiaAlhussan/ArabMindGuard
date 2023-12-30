@@ -30,7 +30,7 @@ def main():
                 st.markdown("[1-لبيه](https://labayh.net/ar/)")
                 st.markdown("[2-عناية](https://academicadvising.imamu.edu.sa/Enaya)")
     if st.button("back"):
-        subprocess.run(['python','-m',"streamlit", "run", "k.py"])
+        subprocess.run(["streamlit", "run", "k.py"])
         
         
 
