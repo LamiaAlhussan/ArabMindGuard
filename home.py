@@ -35,9 +35,7 @@
 
 import streamlit as st
 import joblib
-from streamlit_extras.switch_page_button import switch_page
-from st_pages import Page, show_pages, hide_pages
-import tool
+
 
 def app():
     # Load your model and vectorizer

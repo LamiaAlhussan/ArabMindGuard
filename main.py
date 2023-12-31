@@ -1,6 +1,5 @@
 import streamlit as st 
 from streamlit_option_menu import option_menu
-from st_pages import Page, show_pages, hide_pages
 
 import home, tool
 
@@ -35,8 +34,6 @@ class MultiApp:
                 # )
                 orientation= 'horizontal'
             )
-        hide_pages([Page("tool.py","Tool")
-    ])
 
         if app == 'Home':
                 home.app()

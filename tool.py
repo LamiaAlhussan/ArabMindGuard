@@ -1,9 +1,6 @@
 # tool.py
 import streamlit as st
 import joblib
-import subprocess
-from streamlit_extras.switch_page_button import switch_page
-from st_pages import Page, show_pages, hide_pages
 # import main
 
 
