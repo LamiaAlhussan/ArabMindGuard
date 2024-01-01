@@ -33,6 +33,8 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import demoji
+from sklearn.svm import SVC
+
 
 # import subprocess
 
@@ -47,7 +49,7 @@ import demoji
 # Load your dataset
 stemmer = ISRIStemmer()
 mle = MLEDisambiguator.pretrained()
-nltk.download('punkt')
+#nltk.download('punkt')
 
 dataset_path = 'rr.csv'
 df = pd.read_csv(dataset_path)
@@ -85,7 +87,7 @@ remove_hashtag(df)
 arabic_punctuations = '''`÷×؛<>_()*&^%][ـ،/:"؟.,'{}~¦+|!”…“–ـ'''
 english_punctuations = string.punctuation
 punctuations_list = arabic_punctuations + english_punctuations
-nltk.download('stopwords')
+# nltk.download('stopwords')
 
 def remove_punctuations(text):
     translator = str.maketrans('', '', punctuations_list)
@@ -145,15 +147,15 @@ def processDocument(doc, stemmer):
 
     # Remove remaining non-alphanumeric characters
     doc = re.sub(r'\W', ' ', doc)
-    doc = remove_stopwords(doc)
+   # doc = remove_stopwords(doc)
 
     # Remove extra whitespaces
     doc = re.sub(r'\s+', ' ', doc).strip()
-    doc = ' '.join([word for word in doc.split() if len(word.strip())>2])
+    #doc = ' '.join([word for word in doc.split() if len(word.strip())>2])
 
 
     #stemming
-    doc = stemmer.stem(doc)
+   # doc = stemmer.stem(doc)
 
 
     return doc
@@ -162,20 +164,47 @@ df["Tweets"] = df['Tweets'].apply(lambda x: preprocess(x))
 
 X = df['Tweets']
 y = df['Label']
-X_train, X_test, y_train, y_test = train_test_split(df['Tweets'], df['Label'], test_size=0.4, random_state=42)
 
-vectorizer = TfidfVectorizer(max_features=5000)
+combined_tweets = [(tweet, label) for tweet, label in zip(X, y)]
+
+# Separate depressed and non-depressed tweets
+depressed_tweets = [(tweet, label) for tweet, label in combined_tweets if label == 1]
+non_depressed_tweets = [(tweet, label) for tweet, label in combined_tweets if label == 2]
+
+
+
+# Split the data into training and testing sets with an equal number of depressed and non-depressed tweets
+X_train_depressed, X_test_depressed, y_train_depressed, y_test_depressed = train_test_split(
+    [tweet for tweet, _ in depressed_tweets], [label for _, label in depressed_tweets],
+    test_size=0.2, random_state=42, stratify=[label for _, label in depressed_tweets]
+)
+
+X_train_non_depressed, X_test_non_depressed, y_train_non_depressed, y_test_non_depressed = train_test_split(
+    [tweet for tweet, _ in non_depressed_tweets], [label for _, label in non_depressed_tweets],
+    test_size=0.2, random_state=42, stratify=[label for _, label in non_depressed_tweets]
+)
+# Combine the depressed and non-depressed training sets
+X_train = X_train_depressed + X_train_non_depressed
+y_train = y_train_depressed + y_train_non_depressed
+
+# Combine the depressed and non-depressed testing sets
+X_test = X_test_depressed + X_test_non_depressed
+y_test = y_test_depressed + y_test_non_depressed
+
+# X_train, X_test, y_train, y_test = train_test_split(df['Tweets'], df['Label'], test_size=0.4, random_state=42)
+
+vectorizer = TfidfVectorizer(max_features=5000, ngram_range=(1,3))
 X_train_tfidf = vectorizer.fit_transform(X_train)
 X_test_tfidf = vectorizer.transform(X_test)
 
 # Fine-tune Logistic Regression parameters using GridSearchCV
-param_grid = {'C': [0.00001,0.0001, 0.001, 0.01, 0.1, 1, 10]}
+param_grid = {'C': [0.00001,0.0001, 0.001, 0.01, 0.1, 1, 10,100]}
 grid_search = GridSearchCV(LogisticRegression(), param_grid, cv=5)
 grid_search.fit(X_train_tfidf, y_train)
 
 # Get the best parameters
 best_params = grid_search.best_params_
-print("Best Parameters:", best_params)
+print("Best Parameters: 1,3", best_params)
 
 # Use the best parameters to train the model
 best_model = grid_search.best_estimator_
@@ -190,6 +219,43 @@ accuracy = accuracy_score(y_test, y_pred)
 # Save the trained model and vectorizer
 # Save the trained model and vectorizer
 print(accuracy*100)
+
+print('-------------------------')
+# Example with Support Vector Machine (SVM)
+svm_model = SVC(kernel='linear', C=1.0, random_state=42)
+svm_model.fit(X_train_tfidf, y_train)
+y_pred_svm = svm_model.predict(X_test_tfidf)
+accuracy_svm = accuracy_score(y_test, y_pred_svm)
+print(f"SVM Accuracy: {accuracy_svm:.2f}")
+
+#--
+svm_param_grid = {'C': [0.001, 0.01, 0.1, 1, 10],
+                  'kernel': ['linear', 'rbf', 'poly'],
+                  'gamma': ['scale', 'auto']}
+
+svm_grid_search = GridSearchCV(SVC(random_state=42), svm_param_grid, cv=5, scoring='accuracy')
+svm_grid_search.fit(X_train_tfidf, y_train)
+
+# Get the best parameters for SVM
+best_svm_params = svm_grid_search.best_params_
+print("Best SVM Parameters:", best_svm_params)
+
+# Use the best parameters to train the SVM model
+best_svm_model = svm_grid_search.best_estimator_
+best_svm_model.fit(X_train_tfidf, y_train)
+
+# predictions on the test set for SVM
+y_pred_svm_tuned = best_svm_model.predict(X_test_tfidf)
+
+# Evaluate the tuned SVM model
+accuracy_svm_tuned = accuracy_score(y_test, y_pred_svm_tuned)
+print(f"Tuned SVM Accuracy: {accuracy_svm_tuned:.2f}")
+print('Tuned SVM train accuracy', best_svm_model.score(X_train_tfidf, y_train))
+print('Tuned SVM test accuracy', best_svm_model.score(X_test_tfidf, y_test))
+# print('Tuned SVM cross-validation', cross_val_score(best_svm_model, X_train_tfidf, y_train).mean())
+# Display other metrics for the tuned SVM model
+# print(classification_report(y_test, y_pred_svm_tuned))
+
 joblib.dump(accuracy, 'logistic_regression_model.pkl')
 # joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
 
