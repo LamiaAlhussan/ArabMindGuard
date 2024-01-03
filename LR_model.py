@@ -199,7 +199,7 @@ def analyze_user_tweets(userFile, vectorizer, model):
         print("No depressed tweets found in the unlabeled set.")
     else:
         wordcloud_depressed = WordCloud(
-            width=800, height=400, background_color='white',
+            width=800, height=400, background_color='#fbfbfb',
             font_path='NotoNaskhArabic-Medium.ttf',
             max_words=50,  # Adjust the number of max words
             collocations=False  # Disable collocations
@@ -268,7 +268,7 @@ def main():
         print("No depressed tweets found in the training set.")
     else:
         wordcloud_depressed = WordCloud(
-            width=800, height=400, background_color='white',
+            width=800, height=400, background_color='#fbfbfb',
             font_path='NotoNaskhArabic-Medium.ttf',
             max_words=50,  # Adjust the number of max words
             collocations=False  # Disable collocations
