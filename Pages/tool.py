@@ -10,25 +10,27 @@ from nltk import probability
 import base64
 from pathlib import Path
 
-
 # import main
-
 
 # Load the logistic regression model
 model_filename = 'Extras/logistic_regression_model.pkl'
 logistic_regression_model = joblib.load(model_filename)
-best_model= joblib.load('Extras/LR_Model.pkl')
+best_model = joblib.load('Extras/LR_Model.pkl')
 vectorizer = joblib.load('Extras/vectorizer.pkl')
+
 
 def img_to_bytes(img_path):
     img_bytes = Path(img_path).read_bytes()
     encoded = base64.b64encode(img_bytes).decode()
     return encoded
+
+
 def img_to_html(img_path):
     img_html = "<img src='data:image/png;base64,{}' class='img-fluid' style='width:100%;'>".format(
       img_to_bytes(img_path)
     )
     return img_html
+
 
 def app():
 
@@ -179,13 +181,9 @@ def app():
                             """
                             , unsafe_allow_html=True
                         )
-    error_message=''
-    twitter_account=''
+    error_message = ''
+    twitter_account = ''
     pressed = False
-    # show_pages([Page("tool.py","Tool"),
-    #             Page("home.py","Home")
-    # ])
-    # hide_pages(['Tool','Home'])
     
     st.markdown("<h1 align='center' style='font-family:myFirstFont; color:#373d3f;'>اداة تحديد الاكتئاب</h1>", unsafe_allow_html=True)
 
@@ -208,12 +206,10 @@ def app():
     # Display styled text above the input
     st.markdown('<p class="text-above-input"> ادخل حسابك</p>', unsafe_allow_html=True)
 
-
     instr = ''
-
     
         # Create two columns; adjust the ratio to your liking
-    col1, col2 ,cl= st.columns([5,13,2]) 
+    col1, col2 , cl = st.columns([5, 13, 2]) 
 
         # Use the first column for text input
     with col2:
@@ -226,7 +222,7 @@ def app():
             )
         # Use the second column for the submit button
     with col1:
-            buff, col ,buff2= st.columns([4,1,4])
+            buff, col , buff2 = st.columns([4, 1, 4])
             button_style = """
                     <style>
                     .stButton > button {
@@ -240,21 +236,20 @@ def app():
                     </style>
                     """
             st.markdown(button_style, unsafe_allow_html=True)
-               # Display entered Twitter account
             if buff2.button('جرب'):
-                pressed =True
+                pressed = True
 
     if pressed:
         if twitter_account:
                         col1, col2 = st.columns(2) 
-                        user_file = twitter_account +'.csv'
-                        user_found,tweets_length=gather_user_tweets.fetch_and_save_tweets(twitter_account,user_file)
+                        user_file = twitter_account + '.csv'
+                        user_found, tweets_length = gather_user_tweets.fetch_and_save_tweets(twitter_account, user_file)
                         if not user_found:
-                                error_message ="الحساب غير صحيح"  
+                                error_message = "الحساب غير صحيح"  
     
-                        else :
-                            if not tweets_length :
-                                 error_message ="عدد التغريدات غير كافي"   
+                        else:
+                            if not tweets_length:
+                                 error_message = "عدد التغريدات غير كافي"   
                                 
                         if error_message:
                             st.markdown(
@@ -265,16 +260,15 @@ def app():
                                     """,
                                     unsafe_allow_html=True
                                 )
-                        else:               
+                        else: 
                             
-                            Percentage = model.analyze_user_tweets(user_file,vectorizer,best_model)
- 
+                            Percentage = model.analyze_user_tweets(user_file, vectorizer, best_model)
                             
-                            warning_message =""
+                            warning_message = ""
                             if Percentage >= 60:
-                                warning_message= "تحذير : احتمالية اكتئاب عالية."
+                                warning_message = "تحذير : احتمالية اكتئاب عالية."
                             
-                            imagePath = "../Images/"+user_file+'.png'
+                            imagePath = "../Images/" + user_file + '.png'
                             st.markdown(
                                     f"""
                                     <div class='parent'>
@@ -289,21 +283,17 @@ def app():
                                     unsafe_allow_html=True
                                 )
 
-
-
-
                                     # Check if the probability is higher than 60%
                             if Percentage >= 60:
                                 st.markdown("""<div style="text-align: center; align-items:center font-family:myFirstFont; color:#373d3f;;">
                                             <h2>عيادات قد تفيدك
-                                            </h2></div>""",unsafe_allow_html=True)
+                                            </h2></div>""", unsafe_allow_html=True)
                                 clinics = [
                                 {"name": "لبيه", "link": "https://labayh.net/ar/", "description": """تطبيق لبيه هو الحل المتكامل لتقديم خدمات الرعاية والرفاهية النفسية عن بعد، عبر الجلسات والمحاضرات ومجموعات الدعم المقدمة من المختصين المرخصين. حمل تطبيق لبيه و ابدأ رحلة التعافي الآن"""},
                                 {"name": "عناية", "link": "https://academicadvising.imamu.edu.sa/Enaya", "description": "خدمة متخصصة لتقديم خدمات علاجية وارشادية لدعم وتحقيق الصحة النفسية لدى طلاب وطالبات ومنسوبي جامعة الامام محمد بن سعود الإسلامية"},
-                                # Add more clinics as needed
                             ]
                                 for i, clinic in enumerate(clinics, start=1):
-                                    st.markdown( f'''
+                                    st.markdown(f'''
                                     <div class="parent-clinic">
                                     <a href="{clinic['link']}" style="text-decoration:none;">
                                     <div class="clinics">
@@ -315,9 +305,5 @@ def app():
                                     </div>
                                     </a>
                                     </div>
-                                    ''',unsafe_allow_html=True)
-
-
-    
- 
+                                    ''', unsafe_allow_html=True)
 
