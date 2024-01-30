@@ -1,7 +1,9 @@
 import streamlit as st 
 from streamlit_option_menu import option_menu
 
-import home, tool,login
+# import Pages.home as home, Pages.tool as tool, Pages.about as about
+import home, tool, about
+
 import base64
 from pathlib import Path
 
@@ -16,7 +18,7 @@ def img_to_html(img_path):
     )
     return img_html
 
-logo_image = "logo.jpg"  # Provide the correct path to your logo
+logo_image = "../Images/logo.jpg"  # Provide the correct path to your logo
 
 st.markdown(
     f"""
@@ -59,13 +61,13 @@ class MultiApp:
         app = option_menu(
         
                 menu_title=None,
-                options=['Home','Tool',"About Us",'Log In'],
+                options=['الرئيسية',"الاداة",'من نحن'],
                 icons=['house-fill'],
                 # menu_icon='chat-text-fill',
                 menu_icon='cast',
                 default_index=0,
                 styles={
-                    "container": {"background-color":'#f2f2f2'},
+                    "container": {"background-color":'#f2f2f2',"direction": "rtl"},
                     # "icon": {"color": "white", "font-size": "23px"}, 
                     # "nav-link": {"color":"white","font-size": "20px", "text-align": "left", "margin":"0px", "--hover-color": "blue"},
                     "nav-link-selected": {"background-color": "#ee5b4d"}
@@ -75,12 +77,64 @@ class MultiApp:
                 orientation= 'horizontal'
             )
 
-        if app == 'Home':
+        if app == 'الرئيسية':
                 home.app()
-        if app == 'Tool':
+        if app == 'الاداة':
                 tool.app()
-        if app == 'Log In':
-            login.app()
-
+        if app == "من نحن":
+            about.app()
             
     run()
+
+    footer="""<style>
+
+
+    .footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height:7%;
+    background-color: #f2f2f2;
+    color: black;
+    text-align: center;
+    }
+    .icon{
+        width:1.3rem;
+        position:relative;
+        left:41.2rem;
+        bottom:-0.7rem;
+    }
+    .footer-text{
+        font-size:0.7rem;
+        position:relative;
+        top:2.1rem;
+    }
+    .email-text{
+        align-items: center;
+         position:relative;
+        left:43rem;
+        bottom:0.8rem;
+       
+        
+        
+    }
+    .email-div{
+        position:fixed;
+        padding:0%;
+        
+    }
+    </style>
+    
+    """
+    st.markdown(footer,unsafe_allow_html=True)
+    st.write(f"""   <div class="footer">
+    <div class="email-div">
+    <div class='icon'>{img_to_html("../Images/iconsemail.png")} </div>
+    <p class='email-text'>ArabMindGuard@gmail.com</p> 
+    </div>
+    <p class='footer-text'> Arab Mind Guard @ 2023</p>
+    </div>""", unsafe_allow_html=True)
+
+    
+

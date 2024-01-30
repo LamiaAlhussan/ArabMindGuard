@@ -1,9 +1,7 @@
 import streamlit as st
-import joblib
-from PIL import Image
 import base64
 from pathlib import Path
-import chart
+import graphics
 
 
 def img_to_bytes(img_path):
@@ -17,11 +15,6 @@ def img_to_html(img_path):
     return img_html
 
 def app():
-    # # Load your model and vectorizer
-    # model_filename = 'Saudi_percentage.pkl'
-    # logistic_regression_model = joblib.load(model_filename)
-    
-    
     
     # style
     st.markdown(
@@ -132,7 +125,7 @@ def app():
 
 
 # Get the HTML string representation of the Plotly chart
-    chart.chart()
+    graphics.chart()
     # Streamlit UI
     st.markdown("<h1 style='text-align:center;'class='titles'>احصائية الاكتئاب في تويتر السعودية</h1>", unsafe_allow_html=True)
 
@@ -149,19 +142,12 @@ def app():
                         f"""
                                 <div class='parent'>
                                <div class="image-container"> <h4 class='titles'>ابرز العلامات</h4>
-                                {img_to_html("dataset_wordcloud.png")}</div> 
+                                {img_to_html("../Images/dataset.png")}</div> 
                                  <div class="container-like"> <h4 class='titles'>احصائيات سنة 2023</h4>
-                                {img_to_html("chart.png")}</div> 
+                                {img_to_html("../Images/chart.png")}</div> 
                            
                                 </div>
                         """,
                                 unsafe_allow_html=True
                             )
     
-    # "Try Our Tool" button
-#     if st.button("Try Our Tool"):
-#         switch_page("Tool")
-
-# # Register this page with the st_pages extension
-# show_pages([Page("home.py", "App")])
-
