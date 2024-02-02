@@ -119,6 +119,7 @@ def test_model(model, vectorizer, X_test, y_test):
 
 
 def analyze_user_tweets(userFile, vectorizer, model):
+    print('entered ----------------')
     """
     Analyzes a user's tweets for depression indicators.
 

@@ -10,7 +10,6 @@ from nltk import probability
 import base64
 from pathlib import Path
 
-# import main
 
 # Load the logistic regression model
 model_filename = 'Extras/logistic_regression_model.pkl'
