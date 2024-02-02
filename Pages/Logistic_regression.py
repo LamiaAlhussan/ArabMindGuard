@@ -9,7 +9,6 @@ import numpy as np
 import os
 import graphics
 from Preprocessing import preprocess
-from sklearn.utils.class_weight import compute_class_weight
 
 
 
@@ -36,6 +35,7 @@ def train_model(X_train, y_train):
     best_model = tune_logistic_regression(X_train_resampled, y_train_resampled)
 
     return best_model, vectorizer
+
 
 
 def upsample_minority_class(X_train_tfidf, y_train, vectorizer):

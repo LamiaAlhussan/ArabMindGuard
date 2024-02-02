@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 
 # import Pages.home as home, Pages.tool as tool, Pages.about as about
-from Pages import home, tool, about
+import home, tool, about
 
 import base64
 from pathlib import Path
