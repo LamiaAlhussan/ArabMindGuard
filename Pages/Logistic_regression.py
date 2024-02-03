@@ -114,12 +114,16 @@ def test_model(model, vectorizer, X_test, y_test):
     accuracy = accuracy_score(y_test, y_pred)
 
     print(f'accuracy : {accuracy*100:.2f}')
+    
+    # Get top depression terms
+    top_depression_terms = get_depression_terms(vectorizer, model)
+    graphics.CreateWordCloud(top_depression_terms, "dataset")
+
 
     return y_pred
 
 
 def analyze_user_tweets(userFile, vectorizer, model):
-    print('entered ----------------')
     """
     Analyzes a user's tweets for depression indicators.
 
@@ -145,33 +149,38 @@ def analyze_user_tweets(userFile, vectorizer, model):
 
     # Clean the unlabeled data (remove NaN and empty tweets)
     unlabeled_df = clean_unlabeled_data(unlabeled_df)
+    depression_percentage = 0
+    
+    
+    if not unlabeled_df.empty:
 
-    # Transform the preprocessed tweet text into TF-IDF features
-    X_unlabeled_tfidf = vectorizer.transform(unlabeled_df['Tweets'])
+        # Transform the preprocessed tweet text into TF-IDF features
+        X_unlabeled_tfidf = vectorizer.transform(unlabeled_df['Tweets'])
 
-    # Predict labels for the unlabeled data using the trained model
-    y_unlabeled_pred = model.predict(X_unlabeled_tfidf)
+        # Predict labels for the unlabeled data using the trained model
+        y_unlabeled_pred = model.predict(X_unlabeled_tfidf)
 
-    # Retrain the model on the unlabeled data
-    model.fit(X_unlabeled_tfidf, y_unlabeled_pred)
+        # Add predicted labels to the DataFrame
+        unlabeled_df['Prediction'] = y_unlabeled_pred
 
-    # Add predicted labels to the DataFrame
-    unlabeled_df['Prediction'] = y_unlabeled_pred
+        # Calculate the percentage of depressed tweets in the unlabeled data
+        depression_percentage = calculate_depression_percentage(y_unlabeled_pred)
 
-    # Calculate the percentage of depressed tweets in the unlabeled data
-    depression_percentage = calculate_depression_percentage(y_unlabeled_pred)
+        # Retrieve top depression terms based on the model coefficients
+        # top_depression_terms = get_depression_terms(vectorizer, model)
 
-    # Retrieve top depression terms based on the model coefficients
-    top_depression_terms = get_depression_terms(vectorizer, model)
+        # Create a word cloud visualization of the top depression terms
+        depressed_wordcloud_text = unlabeled_df['Tweets'][y_unlabeled_pred == '1']
 
-    # Create a word cloud visualization of the top depression terms
-    graphics.CreateWordCloud(top_depression_terms, UserImagePath)
+        graphics.CreateWordCloud(depressed_wordcloud_text, UserImagePath)
 
-    # Remove the user file after processing
-    os.remove(userFile)
+        # Remove the user file after processing
+        os.remove(userFile)
 
 
-    return depression_percentage
+        return True,depression_percentage
+    else:
+        return False,depression_percentage
 
 
 def clean_unlabeled_data(unlabeled_df):
@@ -311,17 +320,12 @@ def main(dataset_path):
     # Calculate depression percentage
     depression_percentage = calculate_depression_percentage(y_pred)
 
-    # Get top depression terms
-    top_depression_terms = get_depression_terms(vectorizer, best_model)
-    graphics.CreateWordCloud(top_depression_terms, "dataset")
-
     return vectorizer, depression_percentage, best_model
 
 
 # Execute main function
-vectorizer, depression_percentage, best_model = main('../Datasets/Experts.csv')
+vectorizer, depression_percentage, best_model = main('../Datasets/Github-All-Twitter-dataset-Experts.csv')
 
-# Save the trained model, depression percentage, and vectorizer
+# Save the trained model, and vectorizer
 joblib.dump(best_model, 'Extras/LR_Model.pkl')
-joblib.dump(depression_percentage, 'Extras/Saudi_percentage.pkl')
 joblib.dump(vectorizer, 'Extras/vectorizer.pkl')

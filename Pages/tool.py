@@ -3,17 +3,11 @@ import streamlit as st
 import joblib
 import Logistic_regression as model
 import gather_user_tweets as gather_user_tweets 
-import numpy as np
-from PIL import Image
-from htbuilder.utils import styles
-from nltk import probability
 import base64
 from pathlib import Path
 
 
 # Load the logistic regression model
-model_filename = 'Extras/logistic_regression_model.pkl'
-logistic_regression_model = joblib.load(model_filename)
 best_model = joblib.load('Extras/LR_Model.pkl')
 vectorizer = joblib.load('Extras/vectorizer.pkl')
 
@@ -261,48 +255,61 @@ def app():
                                 )
                         else: 
                             
-                            Percentage = model.analyze_user_tweets(user_file, vectorizer, best_model)
-                            
-                            warning_message = ""
-                            if Percentage >= 60:
-                                warning_message = "تحذير : احتمالية اكتئاب عالية."
-                            
-                            imagePath = "../Images/" + user_file + '.png'
-                            st.markdown(
-                                    f"""
-                                    <div class='parent'>
-                                <div class="image-container"> <h4 class='titles'>ابرز العلامات</h4>
-                                    {img_to_html(imagePath)}</div> 
-                                    <div class="container-like"><h4 class='titles'> احتمالية الاكتئاب </h4>
-                                    <h1 class='percentage'>{Percentage:.2f}%</h1> 
-                                    <div>{f"<div class='warning-message'>{warning_message}</div>" if warning_message else ""}</div>
-                                    </div>
-                                    </div>
-                                    """,
-                                    unsafe_allow_html=True
-                                )
+                            tweets_length,Percentage = model.analyze_user_tweets(user_file, vectorizer, best_model)
+                            if not tweets_length:
+                                 error_message = "عدد التغريدات غير كافي"
+                                 
+                                 if error_message:
+                                    st.markdown(
+                                            f"""
+                                            <div class="error-message">{error_message}
+                                            </div> 
+                                        
+                                            """,
+                                            unsafe_allow_html=True
+                                        )
+                                 
+                            else:
+                                warning_message = ""
+                                if Percentage >= 60:
+                                    warning_message = "تحذير : احتمالية اكتئاب عالية."
+                                
+                                imagePath = "../Images/" + user_file + '.png'
+                                st.markdown(
+                                        f"""
+                                        <div class='parent'>
+                                    <div class="image-container"> <h4 class='titles'>ابرز العلامات</h4>
+                                        {img_to_html(imagePath)}</div> 
+                                        <div class="container-like"><h4 class='titles'> احتمالية الاكتئاب </h4>
+                                        <h1 class='percentage'>{Percentage:.2f}%</h1> 
+                                        <div>{f"<div class='warning-message'>{warning_message}</div>" if warning_message else ""}</div>
+                                        </div>
+                                        </div>
+                                        """,
+                                        unsafe_allow_html=True
+                                    )
 
-                                    # Check if the probability is higher than 60%
-                            if Percentage >= 60:
-                                st.markdown("""<div style="text-align: center; align-items:center font-family:myFirstFont; color:#373d3f;;">
-                                            <h2>عيادات قد تفيدك
-                                            </h2></div>""", unsafe_allow_html=True)
-                                clinics = [
-                                {"name": "لبيه", "link": "https://labayh.net/ar/", "description": """تطبيق لبيه هو الحل المتكامل لتقديم خدمات الرعاية والرفاهية النفسية عن بعد، عبر الجلسات والمحاضرات ومجموعات الدعم المقدمة من المختصين المرخصين. حمل تطبيق لبيه و ابدأ رحلة التعافي الآن"""},
-                                {"name": "عناية", "link": "https://academicadvising.imamu.edu.sa/Enaya", "description": "خدمة متخصصة لتقديم خدمات علاجية وارشادية لدعم وتحقيق الصحة النفسية لدى طلاب وطالبات ومنسوبي جامعة الامام محمد بن سعود الإسلامية"},
-                            ]
-                                for i, clinic in enumerate(clinics, start=1):
-                                    st.markdown(f'''
-                                    <div class="parent-clinic">
-                                    <a href="{clinic['link']}" style="text-decoration:none;">
-                                    <div class="clinics">
-                                    <div class='red-box'>
-                                    </div>
+                                        # Check if the probability is higher than 60%
+                                if Percentage >= 60:
+                                    st.markdown("""<div style="text-align: center; align-items:center font-family:myFirstFont; color:#373d3f;;">
+                                                <h2>عيادات قد تفيدك
+                                                </h2></div>""", unsafe_allow_html=True)
+                                    clinics = [
+                                    {"name": "لبيه", "link": "https://labayh.net/ar/", "description": """تطبيق لبيه هو الحل المتكامل لتقديم خدمات الرعاية والرفاهية النفسية عن بعد، عبر الجلسات والمحاضرات ومجموعات الدعم المقدمة من المختصين المرخصين. حمل تطبيق لبيه و ابدأ رحلة التعافي الآن"""},
+                                    {"name": "عناية", "link": "https://academicadvising.imamu.edu.sa/Enaya", "description": "خدمة متخصصة لتقديم خدمات علاجية وارشادية لدعم وتحقيق الصحة النفسية لدى طلاب وطالبات ومنسوبي جامعة الامام محمد بن سعود الإسلامية"},
+                                ]
+                                    for i, clinic in enumerate(clinics, start=1):
+                                        st.markdown(f'''
+                                        <div class="parent-clinic">
+                                        <a href="{clinic['link']}" style="text-decoration:none;">
+                                        <div class="clinics">
+                                        <div class='red-box'>
+                                        </div>
 
-                                    <h2 style="direction: rtl;">{str(i)}.{clinic['name']}</h2>
-                                    <p>{clinic['description']}</p>
-                                    </div>
-                                    </a>
-                                    </div>
-                                    ''', unsafe_allow_html=True)
+                                        <h2 style="direction: rtl;">{str(i)}.{clinic['name']}</h2>
+                                        <p>{clinic['description']}</p>
+                                        </div>
+                                        </a>
+                                        </div>
+                                        ''', unsafe_allow_html=True)
 
