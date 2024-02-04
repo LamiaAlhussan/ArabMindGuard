@@ -1,7 +1,6 @@
 import streamlit as st 
 from streamlit_option_menu import option_menu
 
-# import Pages.home as home, Pages.tool as tool, Pages.about as about
 import home, tool, about
 
 import base64
@@ -18,7 +17,7 @@ def img_to_html(img_path):
     )
     return img_html
 
-logo_image = "../Images/logo.jpg"  # Provide the correct path to your logo
+logo_image = "../Images/logo.jpg" 
 
 st.markdown(
     f"""
@@ -63,13 +62,10 @@ class MultiApp:
                 menu_title=None,
                 options=['الرئيسية',"الاداة",'من نحن'],
                 icons=['house-fill'],
-                # menu_icon='chat-text-fill',
                 menu_icon='cast',
                 default_index=0,
                 styles={
                     "container": {"background-color":'#f2f2f2',"direction": "rtl"},
-                    # "icon": {"color": "white", "font-size": "23px"}, 
-                    # "nav-link": {"color":"white","font-size": "20px", "text-align": "left", "margin":"0px", "--hover-color": "blue"},
                     "nav-link-selected": {"background-color": "#ee5b4d"}
                     },
                 

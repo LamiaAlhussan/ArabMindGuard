@@ -35,6 +35,10 @@ To replicate the project's findings and contribute to the ongoing efforts in dep
 3. Run the provided notebooks or scripts to analyze Arabic text data and implement depression detection models.
 4. Explore the historical evolution, global prevalence, and future impact of depression through the project's visualizations and findings.
 
+## Google Colab Links :
+- Arab Mind Guard (AMG) model : https://colab.research.google.com/drive/1-GTkebUFKYPbBFgg_USUUnqG0pSRvijR?usp=sharing
+- Arabic Jordanian General Tweets (AJGT) model : https://colab.research.google.com/drive/1NOwpCb4QeG_Ay85r7PCHtQF-_hYORBXX?usp=sharing
+
 ## Contributors
 - Alya Alsalamah
 - Lamia Alhussan

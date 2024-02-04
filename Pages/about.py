@@ -1,31 +1,26 @@
 import streamlit as st
-import joblib
-from PIL import Image
 import base64
 from pathlib import Path
-import chart
 
 
 def img_to_bytes(img_path):
     img_bytes = Path(img_path).read_bytes()
     encoded = base64.b64encode(img_bytes).decode()
     return encoded
+
+
 def img_to_html(img_path):
     img_html = "<img src='data:image/png;base64,{}' class='img-fluid' style='width:101%; height:70%;'>".format(
-      img_to_bytes(img_path)
+        img_to_bytes(img_path)
     )
     return img_html
 
+
 def app():
-    # # Load your model and vectorizer
-    # model_filename = 'Saudi_percentage.pkl'
-    # logistic_regression_model = joblib.load(model_filename)
-    
-    
-    
+
     # style
     st.markdown(
-                            """
+        """
                             <style>
                                 /* Align text input to the right */
                                 .stTextInput {
@@ -100,21 +95,19 @@ def app():
 
 
                             </style>
-                            """
-                            , unsafe_allow_html=True
-                        )
+                            """,
+        unsafe_allow_html=True,
+    )
 
-
-
-# Get the HTML string representation of the Plotly chart
-    chart.chart()
     # Streamlit UI
-    st.markdown("<h1 style='text-align:center;'class='titles'> </h1>", unsafe_allow_html=True)
+    st.markdown(
+        "<h1 style='text-align:center;'class='titles'> </h1>", unsafe_allow_html=True
+    )
 
     # Display accuracy
 
     st.markdown(
-                        f"""
+        f"""
                                 <div class='parent'>
                                 <div class="container-like">
                                <h2 class='title'> من نحن؟ </h2>
@@ -125,13 +118,5 @@ def app():
                                </div>
                                 </div>
                         """,
-                                unsafe_allow_html=True
-                            )
-    
-    # "Try Our Tool" button
-#     if st.button("Try Our Tool"):
-#         switch_page("Tool")
-
-# # Register this page with the st_pages extension
-# show_pages([Page("home.py", "App")])
-
+        unsafe_allow_html=True,
+    )

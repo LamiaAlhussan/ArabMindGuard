@@ -2,14 +2,14 @@
 import streamlit as st
 import joblib
 import Logistic_regression as model
-import gather_user_tweets as gather_user_tweets 
+import gather_user_tweets as gather_user_tweets
 import base64
 from pathlib import Path
 
 
 # Load the logistic regression model
-best_model = joblib.load('Extras/LR_Model.pkl')
-vectorizer = joblib.load('Extras/vectorizer.pkl')
+best_model = joblib.load("Extras/LR_Model.pkl")
+vectorizer = joblib.load("Extras/vectorizer.pkl")
 
 
 def img_to_bytes(img_path):
@@ -20,7 +20,7 @@ def img_to_bytes(img_path):
 
 def img_to_html(img_path):
     img_html = "<img src='data:image/png;base64,{}' class='img-fluid' style='width:100%;'>".format(
-      img_to_bytes(img_path)
+        img_to_bytes(img_path)
     )
     return img_html
 
@@ -28,7 +28,7 @@ def img_to_html(img_path):
 def app():
 
     st.markdown(
-                            """
+        """
                             <style>
                                 /* Align text input to the right */
                                 .stTextInput {
@@ -171,14 +171,17 @@ def app():
     }
    
                             </style>
-                            """
-                            , unsafe_allow_html=True
-                        )
-    error_message = ''
-    twitter_account = ''
+                            """,
+        unsafe_allow_html=True,
+    )
+    error_message = ""
+    twitter_account = ""
     pressed = False
-    
-    st.markdown("<h1 align='center' style='font-family:myFirstFont; color:#373d3f;'>اداة تحديد الاكتئاب</h1>", unsafe_allow_html=True)
+
+    st.markdown(
+        "<h1 align='center' style='font-family:myFirstFont; color:#373d3f;'>اداة تحديد الاكتئاب</h1>",
+        unsafe_allow_html=True,
+    )
 
     st.markdown(
         f"""
@@ -199,24 +202,23 @@ def app():
     # Display styled text above the input
     st.markdown('<p class="text-above-input"> ادخل حسابك</p>', unsafe_allow_html=True)
 
-    instr = ''
-    
-        # Create two columns; adjust the ratio to your liking
-    col1, col2 , cl = st.columns([5, 13, 2]) 
+    instr = ""
 
-        # Use the first column for text input
+    # Create two columns; adjust the ratio to your liking
+    col1, col2, cl = st.columns([5, 13, 2])
+
+    # Use the first column for text input
     with col2:
-            twitter_account = st.text_input(
-                instr,
-                value=instr,
-                placeholder=instr,
-                label_visibility='collapsed',
-            
-            )
-        # Use the second column for the submit button
+        twitter_account = st.text_input(
+            instr,
+            value=instr,
+            placeholder=instr,
+            label_visibility="collapsed",
+        )
+    # Use the second column for the submit button
     with col1:
-            buff, col , buff2 = st.columns([4, 1, 4])
-            button_style = """
+        buff, col, buff2 = st.columns([4, 1, 4])
+        button_style = """
                     <style>
                     .stButton > button {
                         width: 120%;
@@ -228,55 +230,59 @@ def app():
                     }
                     </style>
                     """
-            st.markdown(button_style, unsafe_allow_html=True)
-            if buff2.button('جرب'):
-                pressed = True
+        st.markdown(button_style, unsafe_allow_html=True)
+        if buff2.button("جرب"):
+            pressed = True
 
     if pressed:
         if twitter_account:
-                        col1, col2 = st.columns(2) 
-                        user_file = twitter_account + '.csv'
-                        user_found, tweets_length = gather_user_tweets.fetch_and_save_tweets(twitter_account, user_file)
-                        if not user_found:
-                                error_message = "الحساب غير صحيح"  
-    
-                        else:
-                            if not tweets_length:
-                                 error_message = "عدد التغريدات غير كافي"   
-                                
-                        if error_message:
-                            st.markdown(
-                                    f"""
+            col1, col2 = st.columns(2)
+            user_file = twitter_account + ".csv"
+            user_found, tweets_length = gather_user_tweets.fetch_and_save_tweets(
+                twitter_account, user_file
+            )
+            if not user_found:
+                error_message = "الحساب غير صحيح"
+
+            else:
+                if not tweets_length:
+                    error_message = "عدد التغريدات غير كافي"
+
+            if error_message:
+                st.markdown(
+                    f"""
                                     <div class="error-message">{error_message}
                                     </div> 
                                    
                                     """,
-                                    unsafe_allow_html=True
-                                )
-                        else: 
-                            
-                            tweets_length,Percentage = model.analyze_user_tweets(user_file, vectorizer, best_model)
-                            if not tweets_length:
-                                 error_message = "عدد التغريدات غير كافي"
-                                 
-                                 if error_message:
-                                    st.markdown(
-                                            f"""
+                    unsafe_allow_html=True,
+                )
+            else:
+
+                tweets_length, Percentage = model.analyze_user_tweets(
+                    user_file, vectorizer, best_model
+                )
+                if not tweets_length:
+                    error_message = "عدد التغريدات غير كافي"
+
+                    if error_message:
+                        st.markdown(
+                            f"""
                                             <div class="error-message">{error_message}
                                             </div> 
                                         
                                             """,
-                                            unsafe_allow_html=True
-                                        )
-                                 
-                            else:
-                                warning_message = ""
-                                if Percentage >= 60:
-                                    warning_message = "تحذير : احتمالية اكتئاب عالية."
-                                
-                                imagePath = "../Images/" + user_file + '.png'
-                                st.markdown(
-                                        f"""
+                            unsafe_allow_html=True,
+                        )
+
+                else:
+                    warning_message = ""
+                    if Percentage >= 60:
+                        warning_message = "تحذير : احتمالية اكتئاب عالية."
+
+                    imagePath = "../Images/" + user_file + ".png"
+                    st.markdown(
+                        f"""
                                         <div class='parent'>
                                     <div class="image-container"> <h4 class='titles'>ابرز العلامات</h4>
                                         {img_to_html(imagePath)}</div> 
@@ -286,20 +292,32 @@ def app():
                                         </div>
                                         </div>
                                         """,
-                                        unsafe_allow_html=True
-                                    )
+                        unsafe_allow_html=True,
+                    )
 
-                                        # Check if the probability is higher than 60%
-                                if Percentage >= 60:
-                                    st.markdown("""<div style="text-align: center; align-items:center font-family:myFirstFont; color:#373d3f;;">
+                    # Check if the probability is higher than 60%
+                    if Percentage >= 60:
+                        st.markdown(
+                            """<div style="text-align: center; align-items:center font-family:myFirstFont; color:#373d3f;;">
                                                 <h2>عيادات قد تفيدك
-                                                </h2></div>""", unsafe_allow_html=True)
-                                    clinics = [
-                                    {"name": "لبيه", "link": "https://labayh.net/ar/", "description": """تطبيق لبيه هو الحل المتكامل لتقديم خدمات الرعاية والرفاهية النفسية عن بعد، عبر الجلسات والمحاضرات ومجموعات الدعم المقدمة من المختصين المرخصين. حمل تطبيق لبيه و ابدأ رحلة التعافي الآن"""},
-                                    {"name": "عناية", "link": "https://academicadvising.imamu.edu.sa/Enaya", "description": "خدمة متخصصة لتقديم خدمات علاجية وارشادية لدعم وتحقيق الصحة النفسية لدى طلاب وطالبات ومنسوبي جامعة الامام محمد بن سعود الإسلامية"},
-                                ]
-                                    for i, clinic in enumerate(clinics, start=1):
-                                        st.markdown(f'''
+                                                </h2></div>""",
+                            unsafe_allow_html=True,
+                        )
+                        clinics = [
+                            {
+                                "name": "لبيه",
+                                "link": "https://labayh.net/ar/",
+                                "description": """تطبيق لبيه هو الحل المتكامل لتقديم خدمات الرعاية والرفاهية النفسية عن بعد، عبر الجلسات والمحاضرات ومجموعات الدعم المقدمة من المختصين المرخصين. حمل تطبيق لبيه و ابدأ رحلة التعافي الآن""",
+                            },
+                            {
+                                "name": "عناية",
+                                "link": "https://academicadvising.imamu.edu.sa/Enaya",
+                                "description": "خدمة متخصصة لتقديم خدمات علاجية وارشادية لدعم وتحقيق الصحة النفسية لدى طلاب وطالبات ومنسوبي جامعة الامام محمد بن سعود الإسلامية",
+                            },
+                        ]
+                        for i, clinic in enumerate(clinics, start=1):
+                            st.markdown(
+                                f"""
                                         <div class="parent-clinic">
                                         <a href="{clinic['link']}" style="text-decoration:none;">
                                         <div class="clinics">
@@ -311,5 +329,6 @@ def app():
                                         </div>
                                         </a>
                                         </div>
-                                        ''', unsafe_allow_html=True)
-
+                                        """,
+                                unsafe_allow_html=True,
+                            )

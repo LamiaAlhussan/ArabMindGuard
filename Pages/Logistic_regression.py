@@ -59,8 +59,10 @@ def upsample_minority_class(X_train_tfidf, y_train, vectorizer):
     # Apply SMOTE for oversampling
     smote = SMOTE(sampling_strategy=desired_ratio, random_state=42)
     X_train_resampled, y_train_resampled = smote.fit_resample(X_train_tfidf, y_train)
+    
+    upsampled_minority_class_samples = sum(1 for label in y_train_resampled if label == '1')
 
-    print("Total number of depressed tweets after upsampling:", np.sum(y_train_resampled == '1'))
+    print("Total number of depressed tweets after upsampling:", upsampled_minority_class_samples)
 
     return X_train_resampled, y_train_resampled
 
@@ -166,12 +168,8 @@ def analyze_user_tweets(userFile, vectorizer, model):
         # Calculate the percentage of depressed tweets in the unlabeled data
         depression_percentage = calculate_depression_percentage(y_unlabeled_pred)
 
-        # Retrieve top depression terms based on the model coefficients
-        # top_depression_terms = get_depression_terms(vectorizer, model)
-
         # Create a word cloud visualization of the top depression terms
         depressed_wordcloud_text = unlabeled_df['Tweets'][y_unlabeled_pred == '1']
-
         graphics.CreateWordCloud(depressed_wordcloud_text, UserImagePath)
 
         # Remove the user file after processing
@@ -195,7 +193,7 @@ def clean_unlabeled_data(unlabeled_df):
     """
     unlabeled_df = unlabeled_df.dropna(subset=['Tweets'])
     unlabeled_df = unlabeled_df[unlabeled_df['Tweets'].str.strip() != ""]
-    print(unlabeled_df)
+    
     return unlabeled_df
 
 

@@ -8,17 +8,20 @@ def img_to_bytes(img_path):
     img_bytes = Path(img_path).read_bytes()
     encoded = base64.b64encode(img_bytes).decode()
     return encoded
+
+
 def img_to_html(img_path):
     img_html = "<img src='data:image/png;base64,{}' class='img-fluid' style='width:101%; height:70%;'>".format(
-      img_to_bytes(img_path)
+        img_to_bytes(img_path)
     )
     return img_html
 
+
 def app():
-    
+
     # style
     st.markdown(
-                            """
+        """
                             <style>
                                 /* Align text input to the right */
                                 .stTextInput {
@@ -118,28 +121,29 @@ def app():
 
 
                             </style>
-                            """
-                            , unsafe_allow_html=True
-                        )
+                            """,
+        unsafe_allow_html=True,
+    )
 
-
-
-# Get the HTML string representation of the Plotly chart
+    # Get the Plotly chart
     graphics.chart()
     # Streamlit UI
-    st.markdown("<h1 style='text-align:center;'class='titles'>احصائية الاكتئاب في تويتر السعودية</h1>", unsafe_allow_html=True)
+    st.markdown(
+        "<h1 style='text-align:center;'class='titles'>احصائية الاكتئاب في تويتر السعودية</h1>",
+        unsafe_allow_html=True,
+    )
 
     # Display accuracy
     st.markdown(
-                        f"""
+        f"""
                                 <div class='caption'>
                                 <p>هذة الاحصائيات شهرية بناءً على تغريدات مستخدمي تويتر في منطقة المملكة العربية السعودية</p>
                                 </div>
                         """,
-                                unsafe_allow_html=True
-                            )
+        unsafe_allow_html=True,
+    )
     st.markdown(
-                        f"""
+        f"""
                                 <div class='parent'>
                                <div class="image-container"> <h4 class='titles'>ابرز العلامات</h4>
                                 {img_to_html("../Images/dataset.png")}</div> 
@@ -148,6 +152,5 @@ def app():
                            
                                 </div>
                         """,
-                                unsafe_allow_html=True
-                            )
-    
+        unsafe_allow_html=True,
+    )

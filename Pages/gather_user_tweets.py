@@ -1,5 +1,4 @@
 import tweepy
-import configparser
 import csv
 
 
@@ -51,9 +50,9 @@ def fetch_and_save_tweets(username, userFile):
         else:
             if len(tweets.data) < 100:
                 tweetlength = False
-            # Specify the CSV file name
             else:
 
+                # Specify the CSV file name
                 userFile = "../Datasets/" + userFile
 
                 with open(userFile, "a", newline="", encoding="utf-8") as csvfile:
