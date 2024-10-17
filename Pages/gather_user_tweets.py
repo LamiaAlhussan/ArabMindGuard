@@ -6,13 +6,13 @@ def fetch_and_save_tweets(username, userFile):
     # read cofing
     user_Found = False
     tweetlength = True
-    api_key = "9Kmm50JN2cJld3BHJswQfKXwe"
-    api_key_secret = "hcyo5IQp542gSUcWebPCLJjgJQdKgUYpRGboGQ2PK0WjAvPQGH"
+    api_key = ""
+    api_key_secret = ""
 
-    access_token = "537587465-W8l66TWKsaABEJ3OZbaZrbuT7VVmiSjMVajOVUAX"
-    access_token_secret = "Iw9cibATU63XPCwAko3fRQyckasjAbawUMg4Yh4YlGLri"
+    access_token = ""
+    access_token_secret = ""
 
-    bearer_token = "AAAAAAAAAAAAAAAAAAAAAO%2BGrQEAAAAAj8viy8t%2Fc7fdHaS%2Bk30GItmQyvA%3DUZHtddyXZIWNGcPEr8yBwcqH06VvvdFmdfVayQNZ7ugqHHdii1"
+    bearer_token = ""
 
     # auth
     client = tweepy.Client(
